@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parsePhotoMaxHeight, placePhotoSrc } from "./photo-url";
+import { parsePhotoMaxHeight, photoSizeFromMaxHeight, placePhotoSrc } from "./photo-url";
 
 describe("placePhotoSrc", () => {
   it("encodes the photo name and thumb height", () => {
@@ -12,6 +12,14 @@ describe("placePhotoSrc", () => {
     expect(placePhotoSrc("places/ChIJ1/photos/AAA", "hero")).toBe(
       "/api/photos?name=places%2FChIJ1%2Fphotos%2FAAA&h=800",
     );
+  });
+});
+
+describe("photoSizeFromMaxHeight", () => {
+  it("maps the thumb bucket and treats everything else as hero", () => {
+    expect(photoSizeFromMaxHeight(160)).toBe("thumb");
+    expect(photoSizeFromMaxHeight(800)).toBe("hero");
+    expect(photoSizeFromMaxHeight(4800)).toBe("hero");
   });
 });
 
