@@ -38,7 +38,6 @@ const place: BrowsePlace = {
 function toIndexPlace(p: BrowsePlace): PlaceIndex {
   return {
     id: p.id,
-    placeId: p.placeId,
     name: p.name,
     lat: p.lat,
     lng: p.lng,

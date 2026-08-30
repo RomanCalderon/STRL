@@ -10,7 +10,6 @@ vi.mock("./map-canvas", () => ({
 
 const place: PlaceIndex = {
   id: "p1",
-  placeId: "ChIJ1",
   name: "Slant of Light Books",
   lat: 30.27,
   lng: -97.74,

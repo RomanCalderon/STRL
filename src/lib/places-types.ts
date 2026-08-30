@@ -82,7 +82,6 @@ export type InsertPlaceResult =
 /** City-index row: list, pins, and AND-filters (including notes search). */
 export type PlaceIndex = {
   id: string;
-  placeId: string;
   name: string;
   lat: number;
   lng: number;
@@ -97,6 +96,7 @@ export type PlaceIndex = {
 };
 
 export type PlaceCardFields = {
+  placeId: string;
   rating: number | null;
   googleMapsUrl: string;
   authorAttributions: PhotoAttribution[];

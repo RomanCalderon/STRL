@@ -74,7 +74,6 @@ function isCityChangeFailure(
 function toIndex(place: PlaceIndex | BrowsePlace): PlaceIndex {
   return {
     id: place.id,
-    placeId: place.placeId,
     name: place.name,
     lat: place.lat,
     lng: place.lng,

@@ -185,6 +185,46 @@ describe("getBrowsePayloadWithDeps", () => {
     await client.close();
   });
 
+  it("omits Google placeId from the city index and keeps it on the card", async () => {
+    const { db, client } = await createTestDb();
+    const inserted = await insertPlace(db, {
+      details: austin,
+      notes: "quiet stacks",
+      cityPolicy: { type: "seed" },
+    });
+    expect(inserted.ok).toBe(true);
+    if (!inserted.ok) return;
+    const payload = await getBrowsePayloadWithDeps(db, "user-1", null);
+    expect(payload.places[0]).not.toHaveProperty("placeId");
+    expect(Object.keys(payload.places[0]!).sort()).toEqual(
+      [
+        "areaId",
+        "areaName",
+        "cityId",
+        "extraTags",
+        "formattedAddress",
+        "id",
+        "lat",
+        "lng",
+        "name",
+        "notes",
+        "photoName",
+        "type",
+      ].sort(),
+    );
+    const json = JSON.stringify(
+      Array.from({ length: 150 }, (_, i) => ({
+        ...payload.places[0],
+        id: `p${i}`,
+        name: `Place ${i}`,
+      })),
+    );
+    expect(json.length).toBeLessThan(80_000);
+    const card = await getPlaceCardWithDeps(db, inserted.place.id);
+    expect(card?.placeId).toBe(austin.placeId);
+    await client.close();
+  });
+
   it("loads card fields for one place", async () => {
     const { db, client } = await createTestDb();
     const inserted = await insertPlace(db, {

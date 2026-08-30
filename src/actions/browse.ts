@@ -64,7 +64,6 @@ export async function getBrowsePayloadWithDeps(
   const joined = await database
     .select({
       id: places.id,
-      placeId: places.placeId,
       name: places.name,
       lat: places.lat,
       lng: places.lng,
@@ -83,7 +82,6 @@ export async function getBrowsePayloadWithDeps(
 
   const browsePlaces = joined.map((row) => ({
     id: row.id,
-    placeId: row.placeId,
     name: row.name,
     lat: row.lat,
     lng: row.lng,

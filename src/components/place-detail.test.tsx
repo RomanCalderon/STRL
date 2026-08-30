@@ -5,7 +5,6 @@ import type { PlaceIndex, BrowsePlace } from "@/lib/places-types";
 
 const indexPlace: PlaceIndex = {
   id: "p1",
-  placeId: "ChIJ1",
   name: "Slant of Light Books",
   lat: 30.27,
   lng: -97.74,
@@ -21,6 +20,7 @@ const indexPlace: PlaceIndex = {
 
 const fullPlace: BrowsePlace = {
   ...indexPlace,
+  placeId: "ChIJ1",
   rating: 4.8,
   googleMapsUrl: "https://maps.google.com/?cid=1",
   authorAttributions: [{ displayName: "Ada", uri: null }],
