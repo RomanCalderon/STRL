@@ -82,11 +82,15 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Photo: Ada")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Close" }));
     await user.click(screen.getByText("pin-p1"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
   });
 
   it("adds a place from the overlay and opens its details card", async () => {
@@ -118,7 +122,7 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: "Add place" }));
-    await user.type(screen.getByPlaceholderText("Search Google places"), "cafe");
+    await user.type(await screen.findByPlaceholderText("Search Google places"), "cafe");
     await user.click(screen.getByRole("button", { name: /New Cafe/ }));
     expect(
       await screen.findByRole("heading", { name: "New Cafe" }),
@@ -168,7 +172,7 @@ describe("AppShell", () => {
     );
     expect(screen.getByRole("button", { name: /city/i })).toBeDisabled();
     await user.click(screen.getByRole("button", { name: "Add place" }));
-    await user.type(screen.getByPlaceholderText("Search Google places"), "books");
+    await user.type(await screen.findByPlaceholderText("Search Google places"), "books");
     await user.click(screen.getByRole("button", { name: /Slant of Light Books/ }));
     expect(onCityChange).toHaveBeenCalledWith("c1");
     expect(
@@ -271,7 +275,9 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
     expect(getPlaceCard).toHaveBeenCalledWith("p1");
     expect(screen.getByRole("button", { name: "Open in Google Maps" })).toHaveAttribute(
       "aria-busy",
@@ -298,13 +304,17 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Quiet")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Open in Google Maps" })).not.toBeInTheDocument();
     });
     expect(screen.queryByRole("link", { name: "Open in Google Maps" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
   });
 
   it("clears Maps pending when getPlaceCard returns null", async () => {
@@ -324,13 +334,17 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Quiet")).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Open in Google Maps" })).not.toBeInTheDocument();
     });
     expect(screen.queryByRole("link", { name: "Open in Google Maps" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
   });
 
   it("ignores a late card fetch after another place is opened", async () => {
@@ -370,13 +384,19 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Slant of Light Books" }),
+    ).toBeInTheDocument();
     await user.click(screen.getByText("New Cafe"));
-    expect(screen.getByRole("heading", { name: "New Cafe" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "New Cafe" }),
+    ).toBeInTheDocument();
     await act(async () => {
       resolveA(place);
     });
-    expect(screen.getByRole("heading", { name: "New Cafe" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "New Cafe" }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Slant of Light Books" })).not.toBeInTheDocument();
     expect(screen.queryByText("Photo: Ada")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Open in Google Maps" })).toHaveAttribute(
@@ -408,7 +428,7 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: "Add place" }));
-    await user.type(screen.getByPlaceholderText("Search Google places"), "cafe");
+    await user.type(await screen.findByPlaceholderText("Search Google places"), "cafe");
     await user.click(screen.getByRole("button", { name: /New Cafe/ }));
     expect(
       await screen.findByRole("heading", { name: "New Cafe" }),
