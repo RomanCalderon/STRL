@@ -141,7 +141,7 @@ export function BrowseApp({
         />
       </div>
 
-      <div className="md:col-start-1 md:row-start-2 md:border-r md:border-stone-300">
+      <div className="relative z-40 md:col-start-1 md:row-start-2 md:border-r md:border-stone-300">
         <FilterBar
           query={query}
           onQuery={setQuery}
