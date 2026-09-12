@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createPlacesClient } from "./places";
+import { CITY_SEARCH_RADIUS_METERS, createPlacesClient } from "./places";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -36,6 +36,37 @@ describe("createPlacesClient", () => {
         secondaryText: "Austin, TX",
       },
     ]);
+    expect(vi.mocked(fetch).mock.calls[0]?.[1]).toEqual(
+      expect.objectContaining({
+        body: JSON.stringify({ input: "slant" }),
+      }),
+    );
+  });
+
+  it("biases Autocomplete to the given city center", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ suggestions: [] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await createPlacesClient("k").autocomplete("Alinea", {
+      lat: 41.88,
+      lng: -87.63,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://places.googleapis.com/v1/places:autocomplete",
+      expect.objectContaining({
+        body: JSON.stringify({
+          input: "Alinea",
+          locationBias: {
+            circle: {
+              center: { latitude: 41.88, longitude: -87.63 },
+              radius: CITY_SEARCH_RADIUS_METERS,
+            },
+          },
+        }),
+      }),
+    );
   });
 
   it("retries Text Search once, then returns hits", async () => {

@@ -30,6 +30,7 @@ export type AppShellActions = {
   getPlaceCard: (placeId: string) => Promise<BrowsePlace | null>;
   searchPlaces: (
     input: string,
+    bias?: { lat: number; lng: number } | null,
   ) => Promise<
     | { ok: true; suggestions: AutocompleteSuggestion[] }
     | { ok: false; message: string }
@@ -72,6 +73,13 @@ function isCityChangeFailure(
   result: CityChangeResult,
 ): result is { ok: false; message: string } {
   return "ok" in result && result.ok === false;
+}
+
+function citySearchBias(
+  city: BrowsePayload["city"],
+): { lat: number; lng: number } | null {
+  if (city?.centerLat == null || city.centerLng == null) return null;
+  return { lat: city.centerLat, lng: city.centerLng };
 }
 
 function toIndex(place: PlaceIndex | BrowsePlace): PlaceIndex {
@@ -250,7 +258,9 @@ export function AppShell(props: AppShellActions) {
       {adding ? (
         <AddPlace
           currentCityId={payload.city?.id ?? null}
-          searchPlaces={props.searchPlaces}
+          searchPlaces={(input) =>
+            props.searchPlaces(input, citySearchBias(payload.city))
+          }
           addPlace={props.addPlace}
           onClose={() => setAdding(false)}
           onSaved={handleSaved}
