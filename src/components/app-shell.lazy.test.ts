@@ -19,7 +19,7 @@ describe("AppShell code splitting", () => {
   });
 
   it("keeps overlay chunk fallbacks inside OverlayFallback", () => {
-    expect(source).toMatch(/loading:\s*OverlayFallback/);
+    expect(source).toMatch(/<Suspense fallback=\{<OverlayFallback \/>\}>/);
     expect(source).not.toMatch(/loading:\s*\(\)\s*=>\s*null/);
   });
 });

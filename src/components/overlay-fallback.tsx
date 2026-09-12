@@ -1,3 +1,5 @@
+"use client";
+
 const pulse =
   "animate-pulse motion-reduce:animate-none bg-[color-mix(in_srgb,var(--ink)_8%,var(--paper))]";
 

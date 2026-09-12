@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import {
   hasCardFields,
   type AutocompleteSuggestion,
@@ -13,13 +13,11 @@ import { BrowseApp } from "./browse-app";
 import { OverlayFallback } from "./overlay-fallback";
 import { Toast } from "./toast";
 
-const AddPlace = dynamic(
-  () => import("./add-place").then((mod) => ({ default: mod.AddPlace })),
-  { loading: OverlayFallback },
+const AddPlace = dynamic(() =>
+  import("./add-place").then((mod) => ({ default: mod.AddPlace })),
 );
-const PlaceDetail = dynamic(
-  () => import("./place-detail").then((mod) => ({ default: mod.PlaceDetail })),
-  { loading: OverlayFallback },
+const PlaceDetail = dynamic(() =>
+  import("./place-detail").then((mod) => ({ default: mod.PlaceDetail })),
 );
 
 export type CityChangeResult = BrowsePayload | { ok: false; message: string };
@@ -256,18 +254,21 @@ export function AppShell(props: AppShellActions) {
         onAdd={() => setAdding(true)}
       />
       {adding ? (
-        <AddPlace
-          currentCityId={payload.city?.id ?? null}
-          searchPlaces={(input) =>
-            props.searchPlaces(input, citySearchBias(payload.city))
-          }
-          addPlace={props.addPlace}
-          onClose={() => setAdding(false)}
-          onSaved={handleSaved}
-        />
+        <Suspense fallback={<OverlayFallback />}>
+          <AddPlace
+            currentCityId={payload.city?.id ?? null}
+            searchPlaces={(input) =>
+              props.searchPlaces(input, citySearchBias(payload.city))
+            }
+            addPlace={props.addPlace}
+            onClose={() => setAdding(false)}
+            onSaved={handleSaved}
+          />
+        </Suspense>
       ) : null}
       {selected ? (
-        <PlaceDetail
+        <Suspense fallback={<OverlayFallback />}>
+          <PlaceDetail
           key={selected.id}
           place={selected}
           cardStatus={cardStatus}
@@ -312,6 +313,7 @@ export function AppShell(props: AppShellActions) {
           }}
           onError={setToast}
         />
+        </Suspense>
       ) : null}
       {toast ? <Toast message={toast} onDismiss={() => setToast(null)} /> : null}
     </>
