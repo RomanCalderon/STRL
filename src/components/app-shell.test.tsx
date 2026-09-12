@@ -121,6 +121,8 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: "Add place" }));
+    expect(screen.getByText("Slant of Light Books")).toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: "Loading places" })).toBeNull();
     await user.type(await screen.findByPlaceholderText("Search Google places"), "cafe");
     await user.click(screen.getByRole("button", { name: /New Cafe/ }));
     expect(

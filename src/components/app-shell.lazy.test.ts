@@ -17,4 +17,9 @@ describe("AppShell code splitting", () => {
     expect(source).toMatch(/import\(["']\.\/add-place["']\)/);
     expect(source).toMatch(/import\(["']\.\/place-detail["']\)/);
   });
+
+  it("keeps overlay chunk fallbacks inside OverlayFallback", () => {
+    expect(source).toMatch(/loading:\s*OverlayFallback/);
+    expect(source).not.toMatch(/loading:\s*\(\)\s*=>\s*null/);
+  });
 });

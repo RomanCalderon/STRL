@@ -10,13 +10,16 @@ import {
   type PlaceIndex,
 } from "@/lib/places-types";
 import { BrowseApp } from "./browse-app";
+import { OverlayFallback } from "./overlay-fallback";
 import { Toast } from "./toast";
 
-const AddPlace = dynamic(() =>
-  import("./add-place").then((mod) => ({ default: mod.AddPlace })),
+const AddPlace = dynamic(
+  () => import("./add-place").then((mod) => ({ default: mod.AddPlace })),
+  { loading: OverlayFallback },
 );
-const PlaceDetail = dynamic(() =>
-  import("./place-detail").then((mod) => ({ default: mod.PlaceDetail })),
+const PlaceDetail = dynamic(
+  () => import("./place-detail").then((mod) => ({ default: mod.PlaceDetail })),
+  { loading: OverlayFallback },
 );
 
 export type CityChangeResult = BrowsePayload | { ok: false; message: string };
