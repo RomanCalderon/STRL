@@ -3,6 +3,11 @@ export const PHOTO_MAX_HEIGHT = {
   hero: 800,
 } as const;
 
+export const PHOTO_WEBP_QUALITY = {
+  thumb: 60,
+  hero: 80,
+} as const;
+
 export type PhotoSize = keyof typeof PHOTO_MAX_HEIGHT;
 
 export function photoMaxHeight(size: PhotoSize): number {
@@ -23,6 +28,10 @@ export function parsePhotoMaxHeight(raw: string | null): number {
   if (n === PHOTO_MAX_HEIGHT.thumb) return PHOTO_MAX_HEIGHT.thumb;
   if (n === PHOTO_MAX_HEIGHT.hero) return PHOTO_MAX_HEIGHT.hero;
   return PHOTO_MAX_HEIGHT.hero;
+}
+
+export function photoSizeFromMaxHeight(height: number): PhotoSize {
+  return height === PHOTO_MAX_HEIGHT.thumb ? "thumb" : "hero";
 }
 
 export function placePhotoSrc(photoName: string, size: PhotoSize): string {

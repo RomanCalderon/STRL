@@ -1,4 +1,5 @@
-import { parsePhotoMaxHeight } from "@/lib/photo-url";
+import { parsePhotoMaxHeight, photoSizeFromMaxHeight } from "@/lib/photo-url";
+import { transcodePhoto } from "@/lib/photo-transcode";
 import { createPlacesClient } from "@/lib/places";
 import { getAllowedSession } from "@/lib/session";
 
@@ -14,15 +15,19 @@ export async function GET(request: Request) {
   if (!name || !name.startsWith("places/")) {
     return new Response("Bad request", { status: 400 });
   }
+  const maxHeightPx = parsePhotoMaxHeight(url.searchParams.get("h"));
   const photo = await createPlacesClient(
     process.env.GOOGLE_PLACES_SERVER_KEY ?? "",
-  ).fetchPhoto(name, {
-    maxHeightPx: parsePhotoMaxHeight(url.searchParams.get("h")),
-  });
+  ).fetchPhoto(name, { maxHeightPx });
   if (!photo) return new Response("Not found", { status: 404 });
-  return new Response(Buffer.from(photo.bytes), {
+  const encoded = await transcodePhoto(
+    photo.bytes,
+    photo.contentType,
+    photoSizeFromMaxHeight(maxHeightPx),
+  );
+  return new Response(Buffer.from(encoded.bytes), {
     headers: {
-      "content-type": photo.contentType,
+      "content-type": encoded.contentType,
       "cache-control": "private, max-age=86400",
     },
   });

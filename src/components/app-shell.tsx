@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import {
   hasCardFields,
@@ -8,10 +9,15 @@ import {
   type BrowsePlace,
   type PlaceIndex,
 } from "@/lib/places-types";
-import { AddPlace } from "./add-place";
 import { BrowseApp } from "./browse-app";
-import { PlaceDetail } from "./place-detail";
 import { Toast } from "./toast";
+
+const AddPlace = dynamic(() =>
+  import("./add-place").then((mod) => ({ default: mod.AddPlace })),
+);
+const PlaceDetail = dynamic(() =>
+  import("./place-detail").then((mod) => ({ default: mod.PlaceDetail })),
+);
 
 export type CityChangeResult = BrowsePayload | { ok: false; message: string };
 
@@ -68,7 +74,6 @@ function isCityChangeFailure(
 function toIndex(place: PlaceIndex | BrowsePlace): PlaceIndex {
   return {
     id: place.id,
-    placeId: place.placeId,
     name: place.name,
     lat: place.lat,
     lng: place.lng,

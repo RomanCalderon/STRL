@@ -5,8 +5,14 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
+import { AUTH_ALLOWED_HOSTS, authTrustedOrigins } from "@/lib/auth-origins";
 
 export const auth = betterAuth({
+  baseURL: {
+    allowedHosts: [...AUTH_ALLOWED_HOSTS],
+    fallback: process.env.BETTER_AUTH_URL,
+  },
+  trustedOrigins: authTrustedOrigins(process.env.BETTER_AUTH_URL),
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {

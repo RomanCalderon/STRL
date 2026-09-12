@@ -24,7 +24,6 @@ const payload: BrowsePayload = {
   places: [
     {
       id: "p1",
-      placeId: "ChIJ1",
       name: "Slant of Light Books",
       lat: 30.27,
       lng: -97.74,
@@ -39,7 +38,6 @@ const payload: BrowsePayload = {
     },
     {
       id: "p2",
-      placeId: "ChIJ2",
       name: "Nickel City",
       lat: 30.26,
       lng: -97.72,
@@ -126,7 +124,6 @@ describe("BrowseApp", () => {
       places: [
         {
           id: "p-chi",
-          placeId: "ChIJ-chi",
           name: "The Violet Hour",
           lat: 41.9,
           lng: -87.68,
