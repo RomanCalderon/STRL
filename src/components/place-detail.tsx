@@ -186,9 +186,9 @@ export function PlaceDetail({
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className={`${ring} absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--sheet)_88%,white)] shadow-sm hover:bg-[var(--sheet)]`}
+            className={`${ring} absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--sheet)_88%,white)] shadow-md hover:bg-[var(--sheet)]`}
           >
-            <CloseIcon className="h-4 w-4" />
+            <CloseIcon className="h-5 w-5" />
           </button>
           <PlaceHero photoName={place.photoName} />
           <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">

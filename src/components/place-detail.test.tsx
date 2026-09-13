@@ -52,6 +52,7 @@ describe("PlaceDetail", () => {
     expect(screen.getByText("123 E 7th St, Austin, TX")).toBeInTheDocument();
     expect(screen.getByLabelText("Notes")).toHaveValue("Go on a weekday");
     expect(screen.getByLabelText("Extra tags")).toHaveValue("quiet");
+    expect(screen.getByRole("button", { name: "Close" })).toHaveClass("h-11", "w-11");
     expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Delete" }).closest("form")).toBeNull();
     expect(screen.queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
