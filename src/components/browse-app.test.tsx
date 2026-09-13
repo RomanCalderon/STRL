@@ -54,6 +54,17 @@ const payload: BrowsePayload = {
 };
 
 describe("BrowseApp", () => {
+  it("shows the Bop mark beside the city name", () => {
+    render(
+      <BrowseApp
+        payload={payload}
+        onCityChange={async () => payload}
+      />,
+    );
+    expect(screen.getByRole("img", { name: "Bop" })).toBeInTheDocument();
+    expect(screen.getByLabelText("City")).toHaveValue("c1");
+  });
+
   it("filters the list and marker ids together", async () => {
     const user = userEvent.setup();
     render(

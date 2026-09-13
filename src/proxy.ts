@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicPaths = ["/sign-in", "/not-invited", "/api/auth"];
+const publicPaths = [
+  "/sign-in",
+  "/not-invited",
+  "/api/auth",
+  "/icon.svg",
+  "/apple-icon.png",
+];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,5 +26,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon\\.svg$|apple-icon\\.png$).*)",
+  ],
 };

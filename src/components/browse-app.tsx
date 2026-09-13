@@ -7,7 +7,7 @@ import type { BrowsePayload, PlaceIndex } from "@/lib/places-types";
 import { PlaceListSkeleton } from "./browse-skeleton";
 import { CitySwitcher } from "./city-switcher";
 import { FilterBar } from "./filter-bar";
-import { MoreIcon, NearMeIcon, PlusIcon } from "./icons";
+import { BopMark, MoreIcon, NearMeIcon, PlusIcon } from "./icons";
 import { MapView } from "./map-view";
 import { PlaceList } from "./place-list";
 
@@ -72,21 +72,24 @@ export function BrowseApp({
   return (
     <div className="grid min-h-dvh grid-rows-[auto_40vh_auto_minmax(0,1fr)] md:h-dvh md:grid-cols-[28rem_minmax(0,1fr)] md:grid-rows-[auto_auto_minmax(0,1fr)]">
       <header className="flex items-center justify-between gap-2 px-4 py-3 md:col-start-1 md:row-start-1 md:border-r md:border-stone-300">
-        <CitySwitcher
-          cities={current.cities}
-          city={
-            pendingCityId
-              ? {
-                  id: pendingCityId,
-                  name:
-                    current.cities.find((c) => c.id === pendingCityId)?.name ??
-                    current.city?.name ??
-                    "",
-                }
-              : current.city
-          }
-          onChange={handleCityChange}
-        />
+        <div className="flex min-w-0 items-center gap-2">
+          <BopMark className="h-7 w-7 shrink-0 text-[var(--accent)]" />
+          <CitySwitcher
+            cities={current.cities}
+            city={
+              pendingCityId
+                ? {
+                    id: pendingCityId,
+                    name:
+                      current.cities.find((c) => c.id === pendingCityId)?.name ??
+                      current.city?.name ??
+                      "",
+                  }
+                : current.city
+            }
+            onChange={handleCityChange}
+          />
+        </div>
         <div className="flex items-center gap-2">
           {!geoDenied ? (
             <button
