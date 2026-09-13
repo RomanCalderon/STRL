@@ -2,12 +2,16 @@ import "server-only";
 
 import type {
   AutocompleteSuggestion,
+  LocationBias,
   PlaceDetails,
   PlacesPort,
   PhotoAttribution,
   TextSearchHit,
 } from "./places-types";
 import { PHOTO_MAX_HEIGHT } from "./photo-url";
+
+/** Places Autocomplete (New) max circle radius; city-scale bias. */
+export const CITY_SEARCH_RADIUS_METERS = 50_000;
 
 const AUTOCOMPLETE_MASK =
   "suggestions.placePrediction.placeId,suggestions.placePrediction.structuredFormat";
@@ -48,13 +52,33 @@ export function createPlacesClient(apiKey: string): PlacesPort {
   });
 
   return {
-    async autocomplete(input: string): Promise<AutocompleteSuggestion[]> {
+    async autocomplete(
+      input: string,
+      bias?: LocationBias | null,
+    ): Promise<AutocompleteSuggestion[]> {
+      const body: {
+        input: string;
+        locationBias?: {
+          circle: {
+            center: { latitude: number; longitude: number };
+            radius: number;
+          };
+        };
+      } = { input };
+      if (bias) {
+        body.locationBias = {
+          circle: {
+            center: { latitude: bias.lat, longitude: bias.lng },
+            radius: bias.radiusMeters ?? CITY_SEARCH_RADIUS_METERS,
+          },
+        };
+      }
       const res = await googleFetch(
         "https://places.googleapis.com/v1/places:autocomplete",
         {
           method: "POST",
           headers: headers(AUTOCOMPLETE_MASK),
-          body: JSON.stringify({ input }),
+          body: JSON.stringify(body),
         },
       );
       const json = (await res.json()) as {

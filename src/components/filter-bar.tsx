@@ -81,7 +81,7 @@ export function FilterBar({
   }, [open]);
 
   return (
-    <div className="relative flex flex-col gap-2 px-4 py-2">
+    <div className="relative z-40 flex flex-col gap-2 px-4 py-2">
       <div className="flex items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <label htmlFor={searchId} className="sr-only">

@@ -121,12 +121,44 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByRole("button", { name: "Add place" }));
+    expect(screen.getByText("Slant of Light Books")).toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: "Loading places" })).toBeNull();
     await user.type(await screen.findByPlaceholderText("Search Google places"), "cafe");
     await user.click(screen.getByRole("button", { name: /New Cafe/ }));
     expect(
       await screen.findByRole("heading", { name: "New Cafe" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("dialog", { name: "New Cafe" })).toBeInTheDocument();
+  });
+
+  it("biases add-place search to the viewed city center", async () => {
+    const user = userEvent.setup();
+    const searchPlaces = vi.fn(async () => ({
+      ok: true as const,
+      suggestions: [] as { placeId: string; primaryText: string; secondaryText: string }[],
+    }));
+    render(
+      <AppShell
+        initial={payload}
+        onCityChange={async () => payload}
+        getPlaceCard={async () => place}
+        searchPlaces={searchPlaces}
+        addPlace={async () => ({ ok: true, place, created: true })}
+        updatePlace={async () => ({ ok: true, place })}
+        deletePlace={async () => ({ ok: true })}
+        movePlace={async () => ({ ok: true, place })}
+        createArea={async () => ({
+          ok: true,
+          area: { id: "east", name: "East" },
+        })}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Add place" }));
+    await user.type(await screen.findByPlaceholderText("Search Google places"), "Alinea");
+    expect(searchPlaces).toHaveBeenCalledWith("Alinea", {
+      lat: 30.27,
+      lng: -97.74,
+    });
   });
 
   it("sets city and cities after the first add from empty", async () => {

@@ -72,6 +72,22 @@ describe("BrowseApp", () => {
     expect(screen.getByTestId("markers").textContent).toBe("p2");
   });
 
+  it("stacks the filters sheet above the place list", async () => {
+    const user = userEvent.setup();
+    render(
+      <BrowseApp
+        payload={payload}
+        onCityChange={async () => payload}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Filters" }));
+    const dialog = screen.getByRole("dialog", { name: "Filters" });
+    expect(dialog).toBeVisible();
+    expect(dialog.closest("[class*='z-40']")).not.toBeNull();
+    expect(screen.getByText("Slant of Light Books")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "bar" })).toBeVisible();
+  });
+
   it("shows the no-match empty state", async () => {
     const user = userEvent.setup();
     render(

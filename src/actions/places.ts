@@ -9,6 +9,7 @@ import { createPlacesClient } from "@/lib/places";
 import type {
   AutocompleteSuggestion,
   BrowsePlace,
+  LocationBias,
   PlacesPort,
 } from "@/lib/places-types";
 import { requireAllowedSession } from "@/lib/require-allowed";
@@ -52,11 +53,12 @@ export async function addPlaceWithDeps(opts: {
 export async function searchPlacesWithDeps(
   places: PlacesPort,
   input: string,
+  bias?: LocationBias | null,
 ): Promise<
   | { ok: true; suggestions: AutocompleteSuggestion[] }
   | { ok: false; message: string }
 > {
-  const suggestions = await places.autocomplete(input);
+  const suggestions = await places.autocomplete(input, bias);
   if (suggestions.length === 0) {
     return {
       ok: false,
@@ -66,7 +68,10 @@ export async function searchPlacesWithDeps(
   return { ok: true, suggestions };
 }
 
-export async function searchPlaces(input: string): Promise<
+export async function searchPlaces(
+  input: string,
+  bias?: LocationBias | null,
+): Promise<
   | { ok: true; suggestions: AutocompleteSuggestion[] }
   | { ok: false; message: string }
 > {
@@ -75,6 +80,7 @@ export async function searchPlaces(input: string): Promise<
     return await searchPlacesWithDeps(
       createPlacesClient(process.env.GOOGLE_PLACES_SERVER_KEY ?? ""),
       input,
+      bias,
     );
   } catch {
     return {

@@ -28,6 +28,12 @@ export type AutocompleteSuggestion = {
   secondaryText: string;
 };
 
+export type LocationBias = {
+  lat: number;
+  lng: number;
+  radiusMeters?: number;
+};
+
 export type TextSearchHit = {
   placeId: string;
   name: string;
@@ -35,7 +41,10 @@ export type TextSearchHit = {
 };
 
 export type PlacesPort = {
-  autocomplete(input: string): Promise<AutocompleteSuggestion[]>;
+  autocomplete(
+    input: string,
+    bias?: LocationBias | null,
+  ): Promise<AutocompleteSuggestion[]>;
   textSearch(query: string): Promise<TextSearchHit[]>;
   getDetails(placeId: string): Promise<PlaceDetails | null>;
   fetchPhoto(

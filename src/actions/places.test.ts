@@ -45,6 +45,31 @@ describe("searchPlacesWithDeps", () => {
     );
     expect(result).toEqual({ ok: true, suggestions: [suggestion] });
   });
+
+  it("forwards city bias to Autocomplete", async () => {
+    const suggestion = {
+      placeId: "ChIJ-alinea",
+      primaryText: "Alinea",
+      secondaryText: "Chicago, IL",
+    };
+    let received: unknown;
+    const result = await searchPlacesWithDeps(
+      {
+        ...placesPort,
+        autocomplete: async (input, bias) => {
+          received = { input, bias };
+          return [suggestion];
+        },
+      },
+      "Alinea",
+      { lat: 41.88, lng: -87.63 },
+    );
+    expect(received).toEqual({
+      input: "Alinea",
+      bias: { lat: 41.88, lng: -87.63 },
+    });
+    expect(result).toEqual({ ok: true, suggestions: [suggestion] });
+  });
 });
 
 describe("addPlaceWithDeps", () => {
