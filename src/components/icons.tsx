@@ -1,3 +1,18 @@
+/** Pinhead `map_pin_with_dot`, CC0 1.0 — https://pinhead.ink/latest/map_pin_with_dot.svg */
+export function BopMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 15 15"
+      role="img"
+      aria-label="Bop"
+      className={className}
+      fill="currentColor"
+    >
+      <path d="M7.5 0C10.26 0 12.5 2.24 12.5 5C12.5 6.84 10.83 10.17 7.5 15C4.17 10.17 2.5 6.84 2.5 5C2.5 2.24 4.74 0 7.5 0ZM7.5 3.25C6.53 3.25 5.75 4.03 5.75 5C5.75 5.97 6.53 6.75 7.5 6.75C8.47 6.75 9.25 5.97 9.25 5C9.25 4.03 8.47 3.25 7.5 3.25Z" />
+    </svg>
+  );
+}
+
 export function SearchIcon({ className }: { className?: string }) {
   return (
     <svg
