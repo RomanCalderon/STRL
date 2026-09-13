@@ -1,10 +1,10 @@
 /** Pinhead `map_pin_with_dot`, CC0 1.0 — https://pinhead.ink/latest/map_pin_with_dot.svg */
-export function BopMark({ className }: { className?: string }) {
+export function StrlMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 15 15"
       role="img"
-      aria-label="Bop"
+      aria-label="STRL"
       className={className}
       fill="currentColor"
     >

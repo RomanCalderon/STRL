@@ -109,7 +109,7 @@ export async function seedCollection(opts: {
 }
 
 export function formatSeedReport(report: SeedReport): string {
-  const lines = ["# Bop seed report", ""];
+  const lines = ["# STRL seed report", ""];
   lines.push(`## Resolved (${report.resolved.length})`);
   for (const row of report.resolved) {
     lines.push(

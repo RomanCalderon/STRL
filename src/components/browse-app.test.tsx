@@ -54,14 +54,14 @@ const payload: BrowsePayload = {
 };
 
 describe("BrowseApp", () => {
-  it("shows the Bop mark beside the city name", () => {
+  it("shows the STRL mark beside the city name", () => {
     render(
       <BrowseApp
         payload={payload}
         onCityChange={async () => payload}
       />,
     );
-    expect(screen.getByRole("img", { name: "Bop" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "STRL" })).toBeInTheDocument();
     expect(screen.getByLabelText("City")).toHaveValue("c1");
   });
 
