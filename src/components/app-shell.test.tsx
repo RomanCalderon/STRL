@@ -84,7 +84,7 @@ describe("AppShell", () => {
     expect(
       await screen.findByRole("heading", { name: "Slant of Light Books" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Photo: Ada")).toBeInTheDocument();
+    expect(await screen.findByText("Photo: Ada")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Close" }));
     await user.click(screen.getByText("pin-p1"));
     expect(
@@ -210,7 +210,9 @@ describe("AppShell", () => {
       await screen.findByRole("heading", { name: "Slant of Light Books" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /city/i })).toBeNull();
-    expect(screen.getByLabelText("City")).toHaveValue("c1");
+    expect(within(screen.getByRole("banner")).getByLabelText("City")).toHaveValue(
+      "c1",
+    );
   });
 
   it("opens the existing place when a move is blocked", async () => {
@@ -256,7 +258,6 @@ describe("AppShell", () => {
       />,
     );
     await user.click(screen.getByText("Slant of Light Books"));
-    await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Edit" }));
     await user.selectOptions(
       within(screen.getByRole("dialog")).getByLabelText("City"),
       "c2",

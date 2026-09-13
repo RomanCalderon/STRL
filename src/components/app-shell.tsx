@@ -11,6 +11,7 @@ import {
 } from "@/lib/places-types";
 import { BrowseApp } from "./browse-app";
 import { OverlayFallback } from "./overlay-fallback";
+import { PlaceSheetFallback } from "./place-sheet-fallback";
 import { Toast } from "./toast";
 
 const AddPlace = dynamic(() =>
@@ -267,7 +268,7 @@ export function AppShell(props: AppShellActions) {
         </Suspense>
       ) : null}
       {selected ? (
-        <Suspense fallback={<OverlayFallback />}>
+        <Suspense fallback={<PlaceSheetFallback />}>
           <PlaceDetail
           key={selected.id}
           place={selected}

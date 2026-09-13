@@ -8,7 +8,7 @@ const indexPlace: PlaceIndex = {
   name: "Slant of Light Books",
   lat: 30.27,
   lng: -97.74,
-  formattedAddress: "Austin",
+  formattedAddress: "123 E 7th St, Austin, TX",
   cityId: "c1",
   areaId: "east",
   areaName: "East",
@@ -49,13 +49,19 @@ describe("PlaceDetail", () => {
       />,
     );
     expect(screen.getByRole("heading", { name: "Slant of Light Books" })).toBeInTheDocument();
-    expect(screen.getByText("Go on a weekday")).toBeInTheDocument();
-    expect(screen.getByText("quiet")).toBeInTheDocument();
-    expect(screen.queryByText("Photo: Ada")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Open in Google Maps" })).toHaveAttribute(
-      "aria-busy",
-      "true",
+    expect(screen.getByText("123 E 7th St, Austin, TX")).toBeInTheDocument();
+    expect(screen.getByLabelText("Notes")).toHaveValue("Go on a weekday");
+    expect(screen.getByLabelText("Extra tags")).toHaveValue("quiet");
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Delete" }).closest("form")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Slant of Light Books" })).toHaveClass(
+      "h-[88dvh]",
     );
+    expect(screen.queryByText("Photo: Ada")).not.toBeInTheDocument();
+    const maps = screen.getByRole("button", { name: "Open in Google Maps" });
+    expect(maps).toHaveAttribute("aria-busy", "true");
+    expect(maps).toHaveClass("w-full");
     expect(screen.queryByRole("link", { name: "Open in Google Maps" })).not.toBeInTheDocument();
   });
 
@@ -82,10 +88,9 @@ describe("PlaceDetail", () => {
     );
     expect(screen.getByText("Photo: Ada")).toBeInTheDocument();
     expect(screen.getByText(/4\.8/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open in Google Maps" })).toHaveAttribute(
-      "href",
-      "https://maps.google.com/?cid=1",
-    );
+    const maps = screen.getByRole("link", { name: "Open in Google Maps" });
+    expect(maps).toHaveAttribute("href", "https://maps.google.com/?cid=1");
+    expect(maps).toHaveClass("w-full");
     expect(document.querySelector("img")).toHaveAttribute(
       "src",
       "/api/photos?name=places%2FChIJ1%2Fphotos%2FAAA&h=800",

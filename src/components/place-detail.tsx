@@ -1,12 +1,79 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { Suspense, use, useEffect, useId, useState } from "react";
 import { placePhotoSrc } from "@/lib/photo-url";
 import { hasCardFields, type BrowsePlace, type PlaceIndex } from "@/lib/places-types";
-import { ChevronIcon, CloseIcon } from "./icons";
+import { CloseIcon } from "./icons";
+import {
+  SHEET_ATTR_SLOT_CLASS,
+  SHEET_DIALOG_CLASS,
+  SHEET_MAPS_CLASS,
+  SHEET_MAPS_SLOT_CLASS,
+  SHEET_PHOTO_CLASS,
+  SHEET_PHOTO_SLOT_CLASS,
+  SHEET_RATING_SLOT_CLASS,
+  SHEET_SCRIM_CLASS,
+} from "./place-sheet-chrome";
+import { PlacePhotoFallback } from "./place-sheet-fallback";
 
 const ring =
   "transition-[color,box-shadow,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ink)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--sheet)]";
+
+const heroPromises = new Map<string, Promise<void>>();
+
+function preloadHero(src: string): Promise<void> {
+  const cached = heroPromises.get(src);
+  if (cached) return cached;
+  const next = new Promise<void>((resolve) => {
+    if (typeof Image === "undefined") {
+      resolve();
+      return;
+    }
+    const img = new Image();
+    const done = () => resolve();
+    img.onload = done;
+    img.onerror = done;
+    img.src = src;
+    if (
+      img.complete ||
+      (typeof navigator !== "undefined" && /jsdom/i.test(navigator.userAgent))
+    ) {
+      done();
+    }
+  });
+  heroPromises.set(src, next);
+  return next;
+}
+
+function PlaceHeroImage({ photoName }: { photoName: string }) {
+  const src = placePhotoSrc(photoName, "hero");
+  use(preloadHero(src));
+  const [broken, setBroken] = useState(false);
+  if (broken) {
+    return <div className={SHEET_PHOTO_SLOT_CLASS} />;
+  }
+  return (
+    // Session-gated /api/photos cannot use next/image (optimizer has no cookies).
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt=""
+      className={SHEET_PHOTO_CLASS}
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
+function PlaceHero({ photoName }: { photoName: string | null }) {
+  if (!photoName) {
+    return <div className={SHEET_PHOTO_SLOT_CLASS} />;
+  }
+  return (
+    <Suspense fallback={<PlacePhotoFallback />}>
+      <PlaceHeroImage photoName={photoName} />
+    </Suspense>
+  );
+}
 
 export function PlaceDetail({
   place,
@@ -57,11 +124,16 @@ export function PlaceDetail({
   onError: (message: string) => void;
 }) {
   const titleId = useId();
-  const [editing, setEditing] = useState(false);
+  const [draftFor, setDraftFor] = useState(place.id);
   const [notes, setNotes] = useState(place.notes);
   const [tags, setTags] = useState(place.extraTags.join(", "));
   const [type, setType] = useState(place.type ?? "");
-  const [brokenPhoto, setBrokenPhoto] = useState(false);
+  if (place.id !== draftFor) {
+    setDraftFor(place.id);
+    setNotes(place.notes);
+    setTags(place.extraTags.join(", "));
+    setType(place.type ?? "");
+  }
   const attribution =
     hasCardFields(place) && place.authorAttributions.length
       ? place.authorAttributions
@@ -69,8 +141,23 @@ export function PlaceDetail({
           .filter(Boolean)
           .join(", ")
       : "";
-  const mapsClassName = `${ring} mt-5 block rounded-full bg-[var(--ink)] px-4 py-3 text-center text-[var(--paper)] hover:opacity-90`;
+  const rating =
+    hasCardFields(place) && place.rating != null ? place.rating : null;
   const mapsUrl = hasCardFields(place) ? place.googleMapsUrl : "";
+  const fieldClass = `${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`;
+
+  async function saveEdits() {
+    const res = await updatePlace(place.id, {
+      notes,
+      extraTags: tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      type: type || null,
+    });
+    if (res.ok) onChanged(res.place);
+    else onError(res.message);
+  }
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -85,16 +172,16 @@ export function PlaceDetail({
       <button
         type="button"
         aria-label="Dismiss"
-        className="bop-fade fixed inset-0 z-40 bg-black/40 md:hidden"
+        className={SHEET_SCRIM_CLASS}
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="fixed inset-x-0 bottom-0 z-50 flex max-h-[92vh] flex-col overflow-hidden rounded-t-[24px] bg-[var(--sheet)] shadow-xl md:inset-y-0 md:right-0 md:left-auto md:h-full md:max-h-none md:w-[28rem] md:rounded-none md:border-l md:border-stone-300"
+        className={SHEET_DIALOG_CLASS}
       >
-        <div className="bop-sheet-enter relative flex min-h-0 flex-1 flex-col overflow-auto">
+        <div className="bop-sheet-enter relative flex min-h-0 flex-1 flex-col overflow-hidden">
           <button
             type="button"
             aria-hidden="true"
@@ -110,115 +197,75 @@ export function PlaceDetail({
           >
             <CloseIcon className="h-4 w-4" />
           </button>
-          {place.photoName && !brokenPhoto ? (
-            // Session-gated /api/photos cannot use next/image (optimizer has no cookies).
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={placePhotoSrc(place.photoName, "hero")}
-              alt=""
-              className="h-64 w-full object-cover md:h-72"
-              onError={() => setBrokenPhoto(true)}
-            />
-          ) : (
-            <div className="h-64 bg-stone-300 md:h-72" />
-          )}
-          <div className="p-4 pt-3">
-          {attribution ? (
-            <p className="text-xs text-[var(--muted)]">Photo: {attribution}</p>
-          ) : null}
-          <h2 id={titleId} className="mt-2 text-xl font-semibold text-balance">
-            {place.name}
-          </h2>
-          <p className="text-sm text-[var(--muted)]">
-            {[
-              place.type,
-              place.areaName,
-              hasCardFields(place) && place.rating != null
-                ? `${place.rating} ★`
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
-          {place.extraTags.length > 0 ? (
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {place.extraTags.map((tag) => (
-                <li
-                  key={tag}
-                  className="rounded-full bg-[color-mix(in_srgb,var(--ink)_8%,var(--sheet))] px-3 py-1 text-sm"
+          <PlaceHero photoName={place.photoName} />
+          <div className="flex min-h-0 flex-1 flex-col overflow-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+            <p className={SHEET_ATTR_SLOT_CLASS}>
+              {attribution ? `Photo: ${attribution}` : "\u00a0"}
+            </p>
+            <h2 id={titleId} className="mt-2 text-xl font-semibold text-balance">
+              {place.name}
+            </h2>
+            <p className={SHEET_RATING_SLOT_CLASS}>
+              {rating != null ? `${rating} ★` : "\u00a0"}
+            </p>
+            {place.formattedAddress ? (
+              <p className="mt-1 text-sm leading-relaxed">{place.formattedAddress}</p>
+            ) : null}
+            <div className={SHEET_MAPS_SLOT_CLASS}>
+              {cardStatus === "pending" ? (
+                <button
+                  type="button"
+                  aria-busy="true"
+                  aria-label="Open in Google Maps"
+                  className={`${ring} ${SHEET_MAPS_CLASS}`}
+                  disabled
                 >
-                  {tag}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {place.notes ? (
-            <section className="mt-4" aria-labelledby={`${titleId}-notes`}>
-              <h3
-                id={`${titleId}-notes`}
-                className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]"
-              >
-                Shared notes
-              </h3>
-              <p className="mt-1 max-w-prose text-sm leading-relaxed">{place.notes}</p>
-            </section>
-          ) : null}
-          {cardStatus === "pending" ? (
-            <button
-              type="button"
-              aria-busy="true"
-              aria-label="Open in Google Maps"
-              className={mapsClassName}
-              disabled
+                  Open in Google Maps
+                </button>
+              ) : mapsUrl ? (
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${ring} ${SHEET_MAPS_CLASS}`}
+                >
+                  Open in Google Maps
+                </a>
+              ) : null}
+            </div>
+            <form
+              className="mt-4 flex flex-col gap-3"
+              onSubmit={async (event) => {
+                event.preventDefault();
+                await saveEdits();
+              }}
             >
-              Open in Google Maps
-            </button>
-          ) : mapsUrl ? (
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className={mapsClassName}
-            >
-              Open in Google Maps
-            </a>
-          ) : null}
-          <button
-            type="button"
-            aria-expanded={editing}
-            onClick={() => setEditing((open) => !open)}
-            className={`${ring} mt-3 inline-flex w-full items-center justify-center gap-1 rounded-full border border-stone-400 px-4 py-2 text-sm hover:border-[var(--ink)]`}
-          >
-            Edit
-            <ChevronIcon className={`h-4 w-4 transition-transform duration-150 ${editing ? "rotate-180" : ""}`} />
-          </button>
-          {editing ? (
-            <div className="mt-4 border-t border-stone-200 pt-4">
-              <label className="mt-0 block text-sm">
+              <label className="block text-sm">
                 Notes
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className={`${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`}
+                  rows={3}
+                  className={`${fieldClass} min-h-20 leading-relaxed`}
                 />
               </label>
-              <label className="mt-2 block text-sm">
+              <label className="block text-sm">
                 Extra tags
                 <input
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
-                  className={`${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`}
+                  className={fieldClass}
                 />
               </label>
-              <label className="mt-2 block text-sm">
+              <label className="block text-sm">
                 Type
                 <input
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  className={`${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`}
+                  className={fieldClass}
                 />
               </label>
-              <label className="mt-2 block text-sm">
+              <label className="block text-sm">
                 Area
                 <select
                   defaultValue={place.areaId ?? ""}
@@ -229,7 +276,7 @@ export function PlaceDetail({
                     if (res.ok) onChanged(res.place);
                     else onError(res.message);
                   }}
-                  className={`${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`}
+                  className={fieldClass}
                 >
                   <option value="">None</option>
                   {areas.map((a) => (
@@ -241,7 +288,7 @@ export function PlaceDetail({
               </label>
               <button
                 type="button"
-                className={`${ring} mt-2 text-sm underline`}
+                className={`${ring} self-start text-sm underline`}
                 onClick={async () => {
                   const name = window.prompt("New area");
                   if (!name) return;
@@ -254,7 +301,7 @@ export function PlaceDetail({
               >
                 New area
               </button>
-              <label className="mt-2 block text-sm">
+              <label className="block text-sm">
                 City
                 <select
                   defaultValue={place.cityId}
@@ -263,7 +310,7 @@ export function PlaceDetail({
                     if (res.ok) onChanged(res.place);
                     else onError(res.message);
                   }}
-                  className={`${ring} mt-1 w-full rounded-lg border border-stone-300 bg-[var(--paper)] p-2`}
+                  className={fieldClass}
                 >
                   {cities.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -273,26 +320,16 @@ export function PlaceDetail({
                 </select>
               </label>
               <button
-                type="button"
-                className={`${ring} mt-4 rounded-full bg-[var(--ink)] px-4 py-2 text-[var(--paper)]`}
-                onClick={async () => {
-                  const res = await updatePlace(place.id, {
-                    notes,
-                    extraTags: tags
-                      .split(",")
-                      .map((t) => t.trim())
-                      .filter(Boolean),
-                    type: type || null,
-                  });
-                  if (res.ok) onChanged(res.place);
-                  else onError(res.message);
-                }}
+                type="submit"
+                className={`${ring} rounded-full bg-[var(--ink)] px-4 py-3 text-[var(--paper)] hover:opacity-90`}
               >
                 Save
               </button>
+            </form>
+            <div className="mt-8 border-t border-stone-300 pt-6">
               <button
                 type="button"
-                className={`${ring} mt-2 block text-sm text-red-700`}
+                className={`${ring} text-sm text-red-700 hover:text-red-800`}
                 onClick={async () => {
                   const res = await deletePlace(place.id);
                   if (res.ok) onDeleted(place.id);
@@ -302,7 +339,6 @@ export function PlaceDetail({
                 Delete
               </button>
             </div>
-          ) : null}
           </div>
         </div>
       </div>
