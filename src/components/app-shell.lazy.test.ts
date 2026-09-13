@@ -24,6 +24,9 @@ describe("AppShell code splitting", () => {
   });
 
   it("uses a sheet-shaped fallback for PlaceDetail", () => {
-    expect(source).toMatch(/<Suspense fallback=\{<PlaceSheetFallback \/>\}>/);
+    expect(source).toMatch(
+      /<Suspense fallback=\{<PlaceSheetFallback embedded \/>\}>/,
+    );
+    expect(source).toMatch(/<PlaceSheetFrame/);
   });
 });

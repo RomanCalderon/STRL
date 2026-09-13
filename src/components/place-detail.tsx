@@ -7,6 +7,7 @@ import { CloseIcon } from "./icons";
 import {
   SHEET_ATTR_SLOT_CLASS,
   SHEET_DIALOG_CLASS,
+  SHEET_INNER_CLASS,
   SHEET_MAPS_CLASS,
   SHEET_MAPS_SLOT_CLASS,
   SHEET_PHOTO_CLASS,
@@ -78,6 +79,8 @@ function PlaceHero({ photoName }: { photoName: string | null }) {
 export function PlaceDetail({
   place,
   cardStatus,
+  titleId: titleIdProp,
+  embedded = false,
   cities,
   areas,
   updatePlace,
@@ -91,6 +94,8 @@ export function PlaceDetail({
 }: {
   place: PlaceIndex | BrowsePlace;
   cardStatus: "pending" | "ready";
+  titleId?: string;
+  embedded?: boolean;
   cities: { id: string; name: string }[];
   areas: { id: string; name: string }[];
   updatePlace: (
@@ -123,7 +128,8 @@ export function PlaceDetail({
   onDeleted: (id: string) => void;
   onError: (message: string) => void;
 }) {
-  const titleId = useId();
+  const generatedTitleId = useId();
+  const titleId = titleIdProp ?? generatedTitleId;
   const [draftFor, setDraftFor] = useState(place.id);
   const [notes, setNotes] = useState(place.notes);
   const [tags, setTags] = useState(place.extraTags.join(", "));
@@ -167,21 +173,8 @@ export function PlaceDetail({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
-    <>
-      <button
-        type="button"
-        aria-label="Dismiss"
-        className={SHEET_SCRIM_CLASS}
-        onClick={onClose}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className={SHEET_DIALOG_CLASS}
-      >
-        <div className="bop-sheet-enter relative flex min-h-0 flex-1 flex-col overflow-hidden">
+  const body = (
+        <div className={SHEET_INNER_CLASS}>
           <button
             type="button"
             aria-hidden="true"
@@ -341,6 +334,25 @@ export function PlaceDetail({
             </div>
           </div>
         </div>
+  );
+
+  if (embedded) return body;
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label="Dismiss"
+        className={SHEET_SCRIM_CLASS}
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className={SHEET_DIALOG_CLASS}
+      >
+        {body}
       </div>
     </>
   );

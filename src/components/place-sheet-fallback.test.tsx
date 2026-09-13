@@ -8,6 +8,7 @@ describe("PlaceSheetFallback", () => {
     const status = screen.getByRole("status", { name: "Loading place" });
     expect(status).toHaveAttribute("aria-busy", "true");
     expect(status).toHaveClass("h-[88dvh]");
+    expect(status).toHaveClass("bop-sheet-enter");
     expect(status.className).not.toMatch(/min-h-dvh/);
     expect(screen.getByRole("status", { name: "Loading photo" })).toBeInTheDocument();
     const maps = screen.getByRole("button", { name: "Open in Google Maps" });

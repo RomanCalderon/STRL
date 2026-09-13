@@ -57,6 +57,7 @@ describe("PlaceDetail", () => {
     expect(screen.queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
     expect(screen.getByRole("dialog", { name: "Slant of Light Books" })).toHaveClass(
       "h-[88dvh]",
+      "bop-sheet-enter",
     );
     expect(screen.queryByText("Photo: Ada")).not.toBeInTheDocument();
     const maps = screen.getByRole("button", { name: "Open in Google Maps" });

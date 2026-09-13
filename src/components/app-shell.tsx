@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useId, useRef, useState } from "react";
 import {
   hasCardFields,
   type AutocompleteSuggestion,
@@ -12,6 +12,7 @@ import {
 import { BrowseApp } from "./browse-app";
 import { OverlayFallback } from "./overlay-fallback";
 import { PlaceSheetFallback } from "./place-sheet-fallback";
+import { PlaceSheetFrame } from "./place-sheet-frame";
 import { Toast } from "./toast";
 
 const AddPlace = dynamic(() =>
@@ -125,6 +126,7 @@ export function AppShell(props: AppShellActions) {
   const [adding, setAdding] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const selectedIdRef = useRef<string | null>(null);
+  const placeTitleId = useId();
 
   async function loadCity(cityId: string): Promise<BrowsePayload | null> {
     try {
@@ -152,6 +154,11 @@ export function AppShell(props: AppShellActions) {
 
   function upsertPlace(place: PlaceIndex | BrowsePlace) {
     setPayload((prev) => mergePlace(prev, place));
+  }
+
+  function closeSelected() {
+    selectedIdRef.current = null;
+    setSelected(null);
   }
 
   function openPlace(place: PlaceIndex | BrowsePlace) {
@@ -268,9 +275,16 @@ export function AppShell(props: AppShellActions) {
         </Suspense>
       ) : null}
       {selected ? (
-        <Suspense fallback={<PlaceSheetFallback />}>
+        <PlaceSheetFrame
+          titleId={placeTitleId}
+          label={selected.name}
+          onDismiss={closeSelected}
+        >
+        <Suspense fallback={<PlaceSheetFallback embedded />}>
           <PlaceDetail
           key={selected.id}
+          embedded
+          titleId={placeTitleId}
           place={selected}
           cardStatus={cardStatus}
           cities={payload.cities}
@@ -297,10 +311,7 @@ export function AppShell(props: AppShellActions) {
             }
             return result;
           }}
-          onClose={() => {
-            selectedIdRef.current = null;
-            setSelected(null);
-          }}
+          onClose={closeSelected}
           onChanged={(place) => {
             void handleChanged(place);
           }}
@@ -315,6 +326,7 @@ export function AppShell(props: AppShellActions) {
           onError={setToast}
         />
         </Suspense>
+        </PlaceSheetFrame>
       ) : null}
       {toast ? <Toast message={toast} onDismiss={() => setToast(null)} /> : null}
     </>
