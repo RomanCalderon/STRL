@@ -7,9 +7,9 @@ export const SHEET_DIALOG_CLASS =
 export const SHEET_INNER_CLASS =
   "relative flex min-h-0 flex-1 flex-col overflow-hidden";
 
-export const SHEET_PHOTO_CLASS = "h-48 w-full shrink-0 object-cover md:h-72";
+export const SHEET_PHOTO_CLASS = "h-[260px] w-full shrink-0 object-cover md:h-80";
 
-export const SHEET_PHOTO_SLOT_CLASS = "h-48 w-full shrink-0 md:h-72";
+export const SHEET_PHOTO_SLOT_CLASS = "h-[260px] w-full shrink-0 md:h-80";
 
 export const SHEET_PULSE =
   "animate-pulse motion-reduce:animate-none bg-[color-mix(in_srgb,var(--ink)_8%,var(--sheet))]";
