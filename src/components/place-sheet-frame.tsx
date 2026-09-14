@@ -16,8 +16,9 @@ export function PlaceSheetFrame({
 }) {
   useEffect(() => {
     if (!onDismiss) return;
+    const dismiss = onDismiss;
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onDismiss();
+      if (event.key === "Escape") dismiss();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
