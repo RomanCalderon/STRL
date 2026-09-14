@@ -4,6 +4,7 @@ import {
   STATIC_MAP_FALLBACK,
   STATIC_MAP_SIZE,
   buildStaticMapUrl,
+  fallbackStaticMapBytes,
   loadStaticMapBytes,
   staticMapStyleParams,
 } from "./static-map";
@@ -30,6 +31,17 @@ describe("buildStaticMapUrl", () => {
     expect(url.searchParams.get("format")).toBe("jpg");
     expect(url.searchParams.get("key")).toBe("server-test-key");
     expect(url.searchParams.getAll("style").length).toBeGreaterThan(0);
+  });
+});
+
+describe("fallbackStaticMapBytes", () => {
+  it("returns a paper-styled SVG poster", () => {
+    const result = fallbackStaticMapBytes();
+    const svg = new TextDecoder().decode(result.bytes);
+    expect(result.contentType).toBe("image/svg+xml");
+    expect(svg).toContain("<svg");
+    expect(svg).toContain("#efe6d6");
+    expect(svg).toContain("#c45c26");
   });
 });
 

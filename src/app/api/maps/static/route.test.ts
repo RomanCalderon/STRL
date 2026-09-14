@@ -6,9 +6,16 @@ vi.mock("@/lib/session", () => ({
 }));
 
 const loadStaticMapBytes = vi.hoisted(() => vi.fn());
+const fallbackStaticMapBytes = vi.hoisted(() =>
+  vi.fn(() => ({
+    bytes: new TextEncoder().encode("<svg xmlns='http://www.w3.org/2000/svg'></svg>"),
+    contentType: "image/svg+xml" as const,
+  })),
+);
 
 vi.mock("@/lib/static-map", () => ({
   loadStaticMapBytes,
+  fallbackStaticMapBytes,
 }));
 
 vi.mock("@/db", () => ({ db: {} }));
@@ -19,6 +26,7 @@ describe("GET /api/maps/static", () => {
   beforeEach(() => {
     vi.stubEnv("GOOGLE_PLACES_SERVER_KEY", "server-test-key");
     loadStaticMapBytes.mockReset();
+    fallbackStaticMapBytes.mockClear();
   });
 
   it("returns 401 without a session", async () => {
@@ -71,5 +79,19 @@ describe("GET /api/maps/static", () => {
     loadStaticMapBytes.mockResolvedValue({ ok: false, status: 404 });
     const res = await GET(new Request("http://localhost/api/maps/static?cityId=nope"));
     expect(res.status).toBe(404);
+  });
+
+  it("returns a paper SVG poster when Google does not return a map image", async () => {
+    vi.mocked(getAllowedSession).mockResolvedValue({
+      ok: true,
+      user: { id: "u1", email: "ada@x.com", name: "Ada" },
+    });
+    loadStaticMapBytes.mockResolvedValue({ ok: false, status: 502 });
+    const res = await GET(new Request("http://localhost/api/maps/static?cityId=c1"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("image/svg+xml");
+    expect(res.headers.get("cache-control")).toBe("private, max-age=300");
+    expect(await res.text()).toContain("<svg");
+    expect(fallbackStaticMapBytes).toHaveBeenCalledOnce();
   });
 });

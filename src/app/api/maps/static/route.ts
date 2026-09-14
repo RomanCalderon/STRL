@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { cities } from "@/db/schema";
-import { loadStaticMapBytes } from "@/lib/static-map";
+import { fallbackStaticMapBytes, loadStaticMapBytes } from "@/lib/static-map";
 import { getAllowedSession } from "@/lib/session";
 
 export async function GET(request: Request) {
@@ -29,6 +29,15 @@ export async function GET(request: Request) {
     apiKey: process.env.GOOGLE_PLACES_SERVER_KEY ?? "",
   });
   if (!result.ok) {
+    if (result.status === 502) {
+      const fallback = fallbackStaticMapBytes();
+      return new Response(Buffer.from(fallback.bytes), {
+        headers: {
+          "content-type": fallback.contentType,
+          "cache-control": "private, max-age=300",
+        },
+      });
+    }
     return new Response("Not found", { status: result.status });
   }
   return new Response(Buffer.from(result.bytes), {
