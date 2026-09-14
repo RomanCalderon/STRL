@@ -1,6 +1,6 @@
 /// <reference types="google.maps" />
 
-export const bopMapStyle: google.maps.MapTypeStyle[] = [
+export const strlMapStyle: google.maps.MapTypeStyle[] = [
   { elementType: "geometry", stylers: [{ color: "#efe6d6" }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#5c5346" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#f5f0e8" }] },

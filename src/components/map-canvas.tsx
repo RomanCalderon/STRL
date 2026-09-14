@@ -10,7 +10,7 @@ import {
   Marker,
   useApiLoadingStatus,
 } from "@vis.gl/react-google-maps";
-import { bopMapStyle } from "@/lib/map-style";
+import { strlMapStyle } from "@/lib/map-style";
 import { pinAppearance, pinIconUrl } from "@/lib/map-pins";
 import type { BrowsePayload, PlaceIndex } from "@/lib/places-types";
 import { MapSlotPlaceholder } from "./browse-skeleton";
@@ -77,7 +77,7 @@ function MapCanvasInner({
       key={city?.id ?? "none"}
       defaultCenter={center}
       defaultZoom={defaultZoom}
-      styles={bopMapStyle}
+      styles={strlMapStyle}
       gestureHandling="greedy"
       disableDefaultUI
       className="h-full w-full"

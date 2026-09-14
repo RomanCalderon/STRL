@@ -2,7 +2,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import type { BopDb } from "@/db";
+import type { StrlDb } from "@/db";
 import { places } from "@/db/schema";
 import { insertPlace } from "@/lib/place-insert";
 import { createPlacesClient } from "@/lib/places";
@@ -16,7 +16,7 @@ import { requireAllowedSession } from "@/lib/require-allowed";
 import { toBrowsePlace, toPlaceRow } from "@/actions/place-view";
 
 export async function addPlaceWithDeps(opts: {
-  db: BopDb;
+  db: StrlDb;
   places: PlacesPort;
   placeId: string;
   currentCityId: string | null;
@@ -111,7 +111,7 @@ export async function addPlace(
 }
 
 export async function updatePlaceWithDeps(
-  database: BopDb,
+  database: StrlDb,
   id: string,
   patch: {
     notes?: string;
@@ -140,7 +140,7 @@ export async function updatePlaceWithDeps(
 }
 
 export async function movePlaceWithDeps(
-  database: BopDb,
+  database: StrlDb,
   id: string,
   toCityId: string,
 ) {
@@ -165,7 +165,7 @@ export async function movePlaceWithDeps(
   return { ok: true as const, place: await toBrowsePlace(database, toPlaceRow(next!)) };
 }
 
-export async function deletePlaceWithDeps(database: BopDb, id: string) {
+export async function deletePlaceWithDeps(database: StrlDb, id: string) {
   await database.delete(places).where(eq(places.id, id));
   return { ok: true as const };
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { and, eq, sql } from "drizzle-orm";
-import { db, type BopDb } from "@/db";
+import { db, type StrlDb } from "@/db";
 import { allowedEmails, areas, cities } from "@/db/schema";
 import {
   isEmailAllowed,
@@ -11,7 +11,7 @@ import {
 import { requireAllowedSession } from "@/lib/require-allowed";
 
 export async function inviteEmailWithDeps(
-  database: BopDb,
+  database: StrlDb,
   email: string,
   envValue: string | undefined,
 ) {
@@ -32,7 +32,7 @@ export async function inviteEmailWithDeps(
 }
 
 export async function removeAllowedEmailWithDeps(
-  database: BopDb,
+  database: StrlDb,
   email: string,
   envValue: string | undefined,
 ) {
@@ -48,7 +48,7 @@ export async function removeAllowedEmailWithDeps(
 }
 
 export async function listAllowedEmailsWithDeps(
-  database: BopDb,
+  database: StrlDb,
   envValue: string | undefined,
 ) {
   const env = parseAllowedEmailsEnv(envValue);
@@ -57,7 +57,7 @@ export async function listAllowedEmailsWithDeps(
 }
 
 export async function renameCityWithDeps(
-  database: BopDb,
+  database: StrlDb,
   cityId: string,
   name: string,
 ) {
@@ -72,7 +72,7 @@ export async function renameCityWithDeps(
 }
 
 export async function createAreaWithDeps(
-  database: BopDb,
+  database: StrlDb,
   cityId: string,
   name: string,
 ) {

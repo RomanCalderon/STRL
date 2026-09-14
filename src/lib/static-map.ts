@@ -1,5 +1,5 @@
 import "server-only";
-import { bopMapStyle } from "@/lib/map-style";
+import { strlMapStyle } from "@/lib/map-style";
 
 export const STATIC_MAP_SIZE = {
   width: 640,
@@ -15,7 +15,7 @@ export const STATIC_MAP_FALLBACK = {
 } as const;
 
 export function staticMapStyleParams(): string[] {
-  return bopMapStyle.map((rule) => {
+  return strlMapStyle.map((rule) => {
     const parts: string[] = [];
     if (rule.featureType) parts.push(`feature:${rule.featureType}`);
     if (rule.elementType) parts.push(`element:${rule.elementType}`);

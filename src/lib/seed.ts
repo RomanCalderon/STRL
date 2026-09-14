@@ -1,7 +1,7 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
-import type { BopDb } from "@/db";
+import type { StrlDb } from "@/db";
 import { places } from "@/db/schema";
 import { parseCollectionCsv } from "./csv";
 import { insertPlace } from "./place-insert";
@@ -25,7 +25,7 @@ export type SeedReport = {
 };
 
 export async function seedCollection(opts: {
-  db: BopDb;
+  db: StrlDb;
   places: PlacesPort;
   csvText: string;
 }): Promise<SeedReport> {

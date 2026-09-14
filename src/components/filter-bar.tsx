@@ -160,14 +160,14 @@ export function FilterBar({
           <button
             type="button"
             aria-label="Dismiss"
-            className="bop-fade fixed inset-0 z-30 bg-black/40 md:bg-transparent"
+            className="strl-fade fixed inset-0 z-30 bg-black/40 md:bg-transparent"
             onClick={() => setOpen(false)}
           />
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="bop-sheet-up fixed inset-x-0 bottom-0 z-40 flex max-h-[80vh] flex-col rounded-t-[24px] bg-[var(--sheet)] p-4 shadow-xl md:absolute md:inset-x-4 md:bottom-auto md:top-full md:mt-2 md:max-h-[min(80vh,32rem)] md:rounded-2xl"
+            className="strl-sheet-up fixed inset-x-0 bottom-0 z-40 flex max-h-[80vh] flex-col rounded-t-[24px] bg-[var(--sheet)] p-4 shadow-xl md:absolute md:inset-x-4 md:bottom-auto md:top-full md:mt-2 md:max-h-[min(80vh,32rem)] md:rounded-2xl"
           >
             <div className="mb-3 flex items-center justify-between">
               <h2 id={titleId} className="text-lg font-semibold">

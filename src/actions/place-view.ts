@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { BopDb } from "@/db";
+import type { StrlDb } from "@/db";
 import { areas, places } from "@/db/schema";
 import type { BrowsePlace, PlaceRow } from "@/lib/places-types";
 
@@ -25,7 +25,7 @@ export function toPlaceRow(row: typeof places.$inferSelect): PlaceRow {
 }
 
 export async function toBrowsePlace(
-  db: BopDb,
+  db: StrlDb,
   place: PlaceRow,
 ): Promise<BrowsePlace> {
   if (!place.areaId) return { ...place, areaName: null };

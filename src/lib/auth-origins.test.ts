@@ -9,8 +9,8 @@ describe("authTrustedOrigins", () => {
   });
 
   it("includes the BETTER_AUTH_URL origin when it is a valid URL", () => {
-    expect(authTrustedOrigins("https://bop-maps.vercel.app/api/auth")).toContain(
-      "https://bop-maps.vercel.app",
+    expect(authTrustedOrigins("https://strl-maps.vercel.app/api/auth")).toContain(
+      "https://strl-maps.vercel.app",
     );
   });
 

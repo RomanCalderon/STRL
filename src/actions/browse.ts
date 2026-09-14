@@ -1,14 +1,14 @@
 "use server";
 
 import { asc, count, eq } from "drizzle-orm";
-import { db, type BopDb } from "@/db";
+import { db, type StrlDb } from "@/db";
 import { areas, cities, places, userPreferences } from "@/db/schema";
 import { toPlaceRow } from "@/actions/place-view";
 import type { BrowsePayload, BrowsePlace } from "@/lib/places-types";
 import { requireAllowedSession } from "@/lib/require-allowed";
 
 export async function getBrowsePayloadWithDeps(
-  database: BopDb,
+  database: StrlDb,
   userId: string,
   cityId: string | null,
 ): Promise<BrowsePayload> {
@@ -123,7 +123,7 @@ export async function getBrowsePayloadWithDeps(
   };
 }
 
-export async function listCitiesWithDeps(database: BopDb) {
+export async function listCitiesWithDeps(database: StrlDb) {
   const rows = await database
     .select({ id: cities.id, name: cities.name })
     .from(cities)
@@ -132,7 +132,7 @@ export async function listCitiesWithDeps(database: BopDb) {
 }
 
 export async function setLastCityWithDeps(
-  database: BopDb,
+  database: StrlDb,
   userId: string,
   cityId: string,
 ) {
@@ -147,7 +147,7 @@ export async function setLastCityWithDeps(
 }
 
 export async function getPlaceCardWithDeps(
-  database: BopDb,
+  database: StrlDb,
   placeId: string,
 ): Promise<BrowsePlace | null> {
   const rows = await database

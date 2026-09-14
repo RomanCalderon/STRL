@@ -14,6 +14,6 @@ export const db = createDb(
   process.env.DATABASE_URL ?? "postgresql://user:password@localhost/dbname",
 );
 
-export type BopDb =
+export type StrlDb =
   | NeonHttpDatabase<typeof schema>
   | PgliteDatabase<typeof schema>;

@@ -1,5 +1,5 @@
 import { and, eq, sql } from "drizzle-orm";
-import type { BopDb } from "@/db";
+import type { StrlDb } from "@/db";
 import { areas, cities, places } from "@/db/schema";
 import { displayType, inferAreaName, inferCityName } from "./infer-location";
 import type {
@@ -30,7 +30,7 @@ function toRow(row: typeof places.$inferSelect): PlaceRow {
 }
 
 async function findCityIdByName(
-  db: BopDb,
+  db: StrlDb,
   name: string,
 ): Promise<string | undefined> {
   const existing = await db
@@ -42,7 +42,7 @@ async function findCityIdByName(
 }
 
 async function createCity(
-  db: BopDb,
+  db: StrlDb,
   name: string,
   lat: number,
   lng: number,
@@ -58,7 +58,7 @@ async function createCity(
 }
 
 async function findOrCreateArea(
-  db: BopDb,
+  db: StrlDb,
   cityId: string,
   name: string,
 ): Promise<string> {
@@ -76,7 +76,7 @@ async function findOrCreateArea(
 }
 
 export async function insertPlace(
-  db: BopDb,
+  db: StrlDb,
   input: InsertPlaceInput,
 ): Promise<InsertPlaceResult> {
   if (input.seedFeatureCid) {
