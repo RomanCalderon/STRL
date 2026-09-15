@@ -1,3 +1,7 @@
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { places } from "@/db/schema";
+import { loadPlacePhoto } from "@/lib/load-place-photo";
 import { parsePhotoMaxHeight, photoSizeFromMaxHeight } from "@/lib/photo-url";
 import { transcodePhoto } from "@/lib/photo-transcode";
 import { createPlacesClient } from "@/lib/places";
@@ -16,10 +20,23 @@ export async function GET(request: Request) {
     return new Response("Bad request", { status: 400 });
   }
   const maxHeightPx = parsePhotoMaxHeight(url.searchParams.get("h"));
-  const photo = await createPlacesClient(
-    process.env.GOOGLE_PLACES_SERVER_KEY ?? "",
-  ).fetchPhoto(name, { maxHeightPx });
-  if (!photo) return new Response("Not found", { status: 404 });
+  const photo = await loadPlacePhoto({
+    photoName: name,
+    maxHeightPx,
+    places: createPlacesClient(process.env.GOOGLE_PLACES_SERVER_KEY ?? ""),
+    persistFreshName: async (placeId, photoName, authorAttributions) => {
+      await db
+        .update(places)
+        .set({ photoName, authorAttributions })
+        .where(eq(places.placeId, placeId));
+    },
+  });
+  if (!photo) {
+    return new Response("Not found", {
+      status: 404,
+      headers: { "cache-control": "no-store" },
+    });
+  }
   const encoded = await transcodePhoto(
     photo.bytes,
     photo.contentType,

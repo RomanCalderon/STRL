@@ -20,6 +20,7 @@ const fetchPhoto = vi.hoisted(() =>
 vi.mock("@/lib/places", () => ({
   createPlacesClient: () => ({
     fetchPhoto,
+    getDetails: async () => null,
   }),
 }));
 
@@ -94,6 +95,7 @@ describe("GET /api/photos", () => {
       new Request("http://localhost/api/photos?name=places/x/photos/y"),
     );
     expect(res.status).toBe(404);
+    expect(res.headers.get("cache-control")).toBe("no-store");
   });
 
   it("forwards original bytes when transcode cannot run", async () => {

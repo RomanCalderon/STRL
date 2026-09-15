@@ -33,11 +33,15 @@ async function googleFetch(
   init: RequestInit,
   retries = 1,
 ): Promise<Response> {
+  let res: Response;
   try {
-    const res = await fetch(url, init);
-    if (res.ok) return res;
+    res = await fetch(url, init);
   } catch {
     if (retries > 0) return googleFetch(url, init, retries - 1);
+    throw new Error("places_api_error");
+  }
+  if (res.ok) return res;
+  if (res.status >= 400 && res.status < 500) {
     throw new Error("places_api_error");
   }
   if (retries > 0) return googleFetch(url, init, retries - 1);

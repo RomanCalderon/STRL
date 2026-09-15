@@ -155,6 +155,21 @@ describe("createPlacesClient", () => {
     expect(details?.primaryType).toBe("book_store");
   });
 
+  it("does not retry a 400 Place Photos response", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({ error: { message: "invalid photo resource" } }),
+          { status: 400 },
+        ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(
+      createPlacesClient("k").fetchPhoto("places/ChIJ1/photos/AAA"),
+    ).resolves.toBeNull();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("requests a height-capped Places photo", async () => {
     const fetchMock = vi.fn(
       async () =>
